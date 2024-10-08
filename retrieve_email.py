@@ -5,7 +5,7 @@ import os
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
