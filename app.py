@@ -3,15 +3,6 @@ import discord
 import requests
 import psutil
 import os
-from flask import Flask
-from threading import Thread
-
-# Flask app to keep the service awake
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Bot is running!"
 
 # Function to get accounts from GitHub
 def fetch_accounts():
@@ -90,5 +81,11 @@ def run_discord_bot():
 # Main entry point
 if __name__ == "__main__":
     # Start Flask app in a thread
+    app = Flask(__name__)
+
+    @app.route('/')
+    def home():
+        return "Bot is running!"
+
     Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
     run_discord_bot()
