@@ -8,7 +8,7 @@ from threading import Thread
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
@@ -83,5 +83,10 @@ def home():
 
 # Main entry point
 if __name__ == "__main__":
-    Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
+    # Run Flask app in a separate thread
+    def run_flask():
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+    # Start Flask app in a thread
+    Thread(target=run_flask).start()
     client.run(os.getenv('DISCORD_TOKEN'))
