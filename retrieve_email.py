@@ -5,7 +5,7 @@ import os
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
@@ -32,8 +32,12 @@ async def on_message(message):
         return
 
     if message.content.startswith('!get_recovery'):
-        print(f"Received command: {message.content}")
-        outlook_account = message.content.split(' ')[1]
+        parts = message.content.split(' ')
+        if len(parts) != 2:
+            await message.channel.send("Please use the correct format: `!get_recovery <outlook_account>`")
+            return
+
+        outlook_account = parts[1]
         accounts = fetch_accounts()
         recovery_email = get_recovery_email(outlook_account, accounts)
         if recovery_email:
