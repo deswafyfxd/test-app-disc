@@ -88,7 +88,9 @@ def run_discord_bot():
         print(f"Failed to connect: {e}")
 
 # Main entry point
+def start_discord_bot():
+    Thread(target=run_discord_bot).start()
+
 if __name__ == "__main__":
-    # Start Flask app in a thread
-    Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
-    run_discord_bot()
+    start_discord_bot()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
