@@ -2,14 +2,13 @@ import yaml
 import discord
 import requests
 import os
+from flask import Flask
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
-    accounts = yaml.safe_load(response.text)['accounts']
-    print(f"Fetched accounts: {accounts}")  # Debug print
-    return accounts
+    return yaml.safe_load(response.text)['accounts']
 
 # Function to get recovery email from fetched data
 def get_recovery_email(outlook_account, accounts):
@@ -49,4 +48,18 @@ async def on_message(message):
         await message.channel.send(response_message)
         print(f"Sent response: {response_message}")
 
-client.run(os.getenv('DISCORD_TOKEN'))
+# Flask server to keep the service awake
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+# Run Flask app in a separate thread
+def run_flask():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+if __name__ == "__main__":
+    from threading import Thread
+    Thread(target=run_flask).start()
+    client.run(os.getenv('DISCORD_TOKEN'))
