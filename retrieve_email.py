@@ -1,0 +1,39 @@
+import yaml
+import discord
+import requests
+import os
+
+# Function to get accounts from GitHub
+def fetch_accounts():
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
+    response = requests.get(url)
+    return yaml.safe_load(response.text)['accounts']
+
+# Function to get recovery email from fetched data
+def get_recovery_email(outlook_account, accounts):
+    return accounts.get(outlook_account)
+
+# Discord bot client
+client = discord.Client(intents=discord.Intents.default())
+
+# Event when the bot is ready
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user}')
+
+# Event to handle messages
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!get_recovery'):
+        outlook_account = message.content.split(' ')[1]
+        accounts = fetch_accounts()
+        recovery_email = get_recovery_email(outlook_account, accounts)
+        if recovery_email:
+            await message.channel.send(f'The recovery email for {outlook_account} is {recovery_email}')
+        else:
+            await message.channel.send(f'No recovery email found for {outlook_account}')
+
+client.run(os.getenv('DISCORD_TOKEN'))
