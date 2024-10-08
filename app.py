@@ -2,7 +2,9 @@ import yaml
 import discord
 import requests
 import psutil
-import os  # Import the os module
+import os
+from flask import Flask
+from threading import Thread
 
 # Function to get accounts from GitHub
 def fetch_accounts():
@@ -72,4 +74,14 @@ async def on_message(message):
         await message.channel.send(response_message)
         print(f"Sent system stats: {response_message}")
 
-client.run(os.getenv('DISCORD_TOKEN'))
+# Flask server to keep the service awake
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+# Main entry point
+if __name__ == "__main__":
+    Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
+    client.run(os.getenv('DISCORD_TOKEN'))
