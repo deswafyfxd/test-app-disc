@@ -5,7 +5,7 @@ import os
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
@@ -13,8 +13,12 @@ def fetch_accounts():
 def get_recovery_email(outlook_account, accounts):
     return accounts.get(outlook_account)
 
+# Set up Discord intents
+intents = discord.Intents.default()
+intents.message_content = True
+
 # Discord bot client
-client = discord.Client(intents=discord.Intents.default())
+client = discord.Client(intents=intents)
 
 # Event when the bot is ready
 @client.event
@@ -28,12 +32,15 @@ async def on_message(message):
         return
 
     if message.content.startswith('!get_recovery'):
+        print(f"Received command: {message.content}")
         outlook_account = message.content.split(' ')[1]
         accounts = fetch_accounts()
         recovery_email = get_recovery_email(outlook_account, accounts)
         if recovery_email:
-            await message.channel.send(f'The recovery email for {outlook_account} is {recovery_email}')
+            response_message = f'The recovery email for {outlook_account} is {recovery_email}'
         else:
-            await message.channel.send(f'No recovery email found for {outlook_account}')
+            response_message = f'No recovery email found for {outlook_account}'
+        await message.channel.send(response_message)
+        print(f"Sent response: {response_message}")
 
 client.run(os.getenv('DISCORD_TOKEN'))
