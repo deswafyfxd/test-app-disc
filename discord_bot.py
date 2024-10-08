@@ -2,10 +2,11 @@ import yaml
 import discord
 import requests
 import psutil
+import os  # Import the os module
 
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
