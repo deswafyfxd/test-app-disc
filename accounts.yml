@@ -1,4 +1,0 @@
-accounts:
-  outlook_account1@example.com: recovery_email1@example.com
-  outlook_account2@example.com: recovery_email2@example.com
-  # Add more accounts as needed
