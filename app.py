@@ -6,9 +6,16 @@ import os
 from flask import Flask
 from threading import Thread
 
+# Flask app to keep the service awake
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
 # Function to get accounts from GitHub
 def fetch_accounts():
-    url = 'https://raw.githubusercontent.com/deswafyfxd/disc-data-strore/main/accounts.yml'
+    url = 'https://raw.githubusercontent.com/<username>/<repository>/main/accounts.yml'
     response = requests.get(url)
     return yaml.safe_load(response.text)['accounts']
 
@@ -74,19 +81,10 @@ async def on_message(message):
         await message.channel.send(response_message)
         print(f"Sent system stats: {response_message}")
 
-# Flask server to keep the service awake
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Bot is running!"
+def run_discord_bot():
+    client.run(os.getenv('DISCORD_TOKEN'))
 
 # Main entry point
 if __name__ == "__main__":
-    # Run Flask app in a separate thread
-    def run_flask():
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-
-    # Start Flask app in a thread
-    Thread(target=run_flask).start()
-    client.run(os.getenv('DISCORD_TOKEN'))
+    Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
+    run_discord_bot()
