@@ -82,9 +82,13 @@ async def on_message(message):
         print(f"Sent system stats: {response_message}")
 
 def run_discord_bot():
-    client.run(os.getenv('DISCORD_TOKEN'))
+    try:
+        client.run(os.getenv('DISCORD_TOKEN'))
+    except Exception as e:
+        print(f"Failed to connect: {e}")
 
 # Main entry point
 if __name__ == "__main__":
+    # Start Flask app in a thread
     Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
     run_discord_bot()
